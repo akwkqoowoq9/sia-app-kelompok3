@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>SIA App - Kelompok 3</title>
+<style>
+:root{
+--blue-800:#073763;
+--blue-600:#0f63b7;
+--blue-400:#1f6feb;
+--muted:#64748b;
+--card-bg:#ffffff;
+--page-bg:#f3f6fb;
+--accent:#0ea5a4;
+}
+body{margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;background:var(--page-bg);color:#0f172a}
+.topbar{background:var(--blue-800);color:white;padding:12px 18px;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:44px;height:44px;background:#eaf4ff;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--blue-800)}
+.container{max-width:1100px;margin:18px auto;padding:10px}
+.grid{display:grid;grid-template-columns:320px 1fr;gap:16px}
+.card{background:var(--card-bg);border-radius:10px;padding:14px;box-shadow:0 8px 24px rgba(15,23,42,0.06)}
+.menu button{margin-right:8px;padding:6px 10px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;cursor:pointer}
+h2{margin:0 0 10px 0;color:var(--blue-800)}
+label{font-size:13px;color:var(--muted);display:block;margin-top:8px}
+input[type="text"], input[type="number"], select{width:100%;padding:8px;border:1px solid #e2e8f0;border-radius:6px;margin-top:6px}
+.small{font-size:13px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+table th, table td{padding:8px;border:1px solid #eef2f7;text-align:left}
+table th{background:var(--blue-400);color:white}
+.actions button{padding:6px 8px;margin-right:6px;border-radius:6px;border:none;cursor:pointer}
+.btn-primary{background:var(--blue-400);color:white}
+.btn-danger{background:#ef4444;color:white}
+.btn-success{background:var(--accent);color:white}
+.inline{display:inline-block}
+.summary{display:flex;gap:10px;flex-wrap:wrap}
+.summary .box{background:#f8fafc;padding:8px;border-radius:8px;border:1px solid #e6eef9;min-width:140px}
+.footer-note{font-size:13px;color:var(--muted);margin-top:10px}
+@media(max-width:900px){
+.grid{grid-template-columns:1fr}
+.brand .hide-sm{display:none}
+}
+</style>
+</head>
+<body>
+<div class="topbar">
+<div class="brand">
+<div class="logo">K3</div>
+<div>
+<div style="font-weight:700">Sistem Informasi Akuntansi — Kelompok 3</div>
+<div style="font-size:12px;color:#dbeafe">Ainun Fitri • Fathur Rozi • Akhmad M. Firgi Awan • Decy Dwi N. Safika</div>
+</div>
+</div>
+<div class="menu">
+<button id="btnNewAll">Reset Semua</button>
+<button id="btnExportAll" class="btn-primary">Export Semua CSV</button>
+<button id="btnFillSample" class="btn-success">Isi Contoh</button>
+</div>
+</div>
+
+<div class="container">
+<div class="grid">
+<!-- LEFT: Stok & Produk -->
+<div>
+<div class="card">
+<h2>Data Produk & Stok</h2>
+<label>Tambah Produk</label>
+<input type="text" id="p_nama" placeholder="Nama barang (contoh: Pulpen Snowman)">
+<label>Harga Jual (Rp)</label>
+<input type="number" id="p_harga" placeholder="5000">
+<label>Stok Awal</label>
+<input type="number" id="p_stok" placeholder="50">
+<div style="margin-top:10px;">
+<button id="btnTambahProduk" class="btn-primary">Tambah Produk</button>
+<button id="btnResetForm" style="margin-left:6px">Reset Form</button>
+</div>
+
+<h3 style="margin-top:14px">Daftar Produk</h3>
+<div style="max-height:260px;overflow:auto;margin-top:8px">
+<table id="tblProduk">
+<thead><tr><th>Kode</th><th>Nama</th><th>Stok</th><th>Harga</th><th>Aksi</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+</div>
+
+<div class="card" style="margin-top:12px">
+<h2>Laporan Stok</h2>
+<div id="stokReport" style="max-height:220px;overflow:auto"></div>
+</div>
+</div>
+
+<!-- RIGHT: Transaksi & Laporan -->
+<div>
+<div class="card">
+<h2>Transaksi</h2>
+<div style="display:flex;gap:12px;flex-wrap:wrap">
+<div style="flex:1;min-width:220px">
+<label>Jenis Transaksi</label>
+<select id="t_jenis"><option value="Penjualan">Penjualan</option><option value="Pembelian">Pembelian</option></select>
+<label>Produk</label>
+<select id="t_produk"></select>
+<label>Jumlah</label>
+<input type="number" id="t_qty" value="1" min="1">
+<label>Harga Satuan (Rp)</label>
+<input type="number" id="t_harga">
+<div style="margin-top:10px">
+<button id="btnTambahTrans" class="btn-primary">Tambah Transaksi</button>
+<button id="btnClearTrans" style="margin-left:8px">Bersihkan</button>
+</div>
+</div>
+
+<div style="flex:1;min-width:220px">
+<div class="summary">
+<div class="box"><div class="small">Total Penjualan</div><div id="sumPenjualan">Rp 0</div></div>
+<div class="box"><div class="small">Total Pembelian</div><div id="sumPembelian">Rp 0</div></div>
+<div class="box"><div class="small">Laba Kotor</div><div id="sumLaba">Rp 0</div></div>
+</div>
+<div class="footer-note">Export laporan / transaksi untuk dokumentasi.</div>
+</div>
+</div>
+
+<h3 style="margin-top:12px">Daftar Transaksi</h3>
+<div style="max-height:320px;overflow:auto">
+<table id="tblTrans">
+<thead><tr><th>No</th><th>Jenis</th><th>Produk</th><th>Qty</th><th>Harga</th><th>Total</th><th>Aksi</th></tr></thead>
+<tbody></tbody>
+</table>
+</div>
+
+<div style="margin-top:10px">
+<button id="btnExportTrans" class="btn-primary">Export Transaksi CSV</button>
+<button id="btnExportLaporan" style="margin-left:8px">Export Laporan CSV</button>
+</div>
+</div>
+
+<div class="card" style="margin-top:12px">
+<h2>Filter & Laporan</h2>
+<label>Filter Tanggal (format: YYYY-MM-DD) - kosongkan utk semua</label>
+<input type="text" id="f_from" placeholder="2025-11-01">
+<input type="text" id="f_to" placeholder="2025-11-30" style="margin-top:6px">
+<div style="margin-top:10px">
+<button id="btnGenerate" class="btn-success">Generate Laporan Terfilter</button>
+<button id="btnResetFilter" style="margin-left:6px">Reset Filter</button>
+</div>
+<div id="reportArea" style="margin-top:12px"></div>
+</div>
+</div>
+</div>
+
+<div style="margin-top:16px" class="card">
+<h2>Catatan / Petunjuk</h2>
+<ol>
+<li>Tambah produk di panel kiri (nama, harga, stok awal).</li>
+<li>Transaksi akan otomatis mengubah stok.</li>
+<li>Edit / hapus transaksi dan produk bisa dilakukan melalui tombol aksi.</li>
+<li>Gunakan tombol <strong>Isi Contoh</strong> untuk mengisi dataset sampel.</li>
+</ol>
+</div>
+</div>
+
+<script>
+/* ===============================
+APLIKASI SIA (KEL.3)
+=============================== */
+
+(function(){
+function rupiah(n){return 'Rp ' + Number(n||0).toLocaleString('id-ID');}
+function uid(){return 't'+Math.random().toString(36).slice(2,9);}
+const KEY='sia_k3_data';
+
+let state={produk:[],transaksi:[]};
+
+function save(){localStorage.setItem(KEY,JSON.stringify(state));}
+function load(){
+let d=localStorage.getItem(KEY);
+if(d) state=JSON.parse(d);
+}
+
+let tblProdukBody, tblTransBody, selProduk;
+let p_nama,p_harga,p_stok,t_jenis,t_qty,t_harga;
+let sumPenjualanEl,sumPembelianEl,sumLabaEl,stokReport,reportArea;
+
+function fillSample(){
+state.produk=[
+{kode:'ATK-01',nama:'Pulpen Snowman',harga:5000,stok:50},
+{kode:'ATK-02',nama:'Buku SIDU',harga:7000,stok:30},
+{kode:'ATK-03',nama:'Map Plastik',harga:3000,stok:40},
+{kode:'ATK-04',nama:'Spidol Snowman',harga:8000,stok:25}
+];
+state.transaksi=[
+{id:uid(),tanggal:'2025-11-12',jenis:'Pembelian',produkKode:'ATK-01',produkNama:'Pulpen Snowman',qty:50,harga:4000,total:200000},
+{id:uid(),tanggal:'2025-11-12',jenis:'Penjualan',produkKode:'ATK-01',produkNama:'Pulpen Snowman',qty:10,harga:5000,total:50000}
+];
+save();
+renderAll();
+}
+
+function renderProduk(){
+tblProdukBody.innerHTML='';
+selProduk.innerHTML='';
+state.produk.forEach((p,i)=>{
+let tr=document.createElement('tr');
+tr.innerHTML=`
+<td>${p.kode}</td>
+<td>${p.nama}</td>
+<td>${p.stok}</td>
+<td>${p.harga.toLocaleString()}</td>
+<td>
+<button data-i="${i}" data-act="edit">Edit</button>
+<button data-i="${i}" data-act="del" style="background:#ef4444;color:#fff">Hapus</button>
+</td>`;
+tblProdukBody.appendChild(tr);
+
+let opt=document.createElement('option');
+opt.value=p.kode;
+opt.textContent=${p.nama} — Rp ${p.harga.toLocaleString()};
+selProduk.appendChild(opt);
+});
+renderStok();
+}
+
+function renderStok(){
+let html=`<table style="width:100%;border-collapse:collapse">
+<thead><tr><th>Kode</th><th>Nama</th><th>Stok</th></tr></thead><tbody>`;
+state.produk.forEach(p=>{
+html+=`<tr>
+<td style="border:1px solid #ddd;padding:6px">${p.kode}</td>
+<td style="border:1px solid #ddd;padding:6px">${p.nama}</td>
+<td style="border:1px solid #ddd;padding:6px">${p.stok}</td>
+</tr>`;
+});
+html+='</tbody></table>';
+stokReport.innerHTML=html;
+}
+
+function renderTransaksi(){
+tblTransBody.innerHTML='';
+let no=1;
+let totalJ=0,totalB=0;
+state.transaksi.forEach(t=>{
+let tr=document.createElement('tr');
+tr.innerHTML=`
+<td>${no++}</td>
+<td>${t.jenis}</td>
+<td>${t.produkNama}</td>
+<td>${t.qty}</td>
+<td>${t.harga.toLocaleString()}</td>
+<td>${t.total.toLocaleString()}</td>
+<td>
+<button onclick="siaEdit('${t.id}')">Edit</button>
+<button onclick="siaDel('${t.id}')" style="background:#ef4444;color:white">Hapus</button>
+</td>`;
+tblTransBody.appendChild(tr);
+
+if(t.jenis==='Penjualan') totalJ+=t.total;
+else totalB+=t.total;
+});
+
+sumPenjualanEl.textContent=rupiah(totalJ);
+sumPembelianEl.textContent=rupiah(totalB);
+sumLabaEl.textContent=rupiah(totalJ-totalB);
+}
+
+function findP(kode){return state.produk.find(x=>x.kode===kode);}
+
+function addProduk(nama,harga,stok){
+let kode='ATK-'+String(state.produk.length+1).padStart(2,'0');
+state.produk.push({kode,nama,harga:Number(harga),stok:Number(stok)});
+save();renderProduk();
+}
+
+function tambahTrans(jenis,kode,qty,harga){
+let p=findP(kode);
+if(!p) return;
+let id=uid();
+let total=qty*harga;
+let tanggal=new Date().toISOString().slice(0,10);
+state.transaksi.push({id,tanggal,jenis,produkKode:kode,produkNama:p.nama,qty,harga,total});
+
+if(jenis==='Penjualan') p.stok-=qty;
+else p.stok+=qty;
+
+save();
+renderTransaksi();renderProduk();
+}
+
+window.siaDel=function(id){
+let i=state.transaksi.findIndex(t=>t.id===id);
+if(i<0) return;
+let t=state.transaksi[i];
+let p=findP(t.produkKode);
+if(p){
+if(t.jenis==='Penjualan') p.stok+=t.qty;
+else p.stok-=t.qty;
+}
+state.transaksi.splice(i,1);
+save();renderAll();
+};
+
+window.siaEdit=function(id){
+let i=state.transaksi.findIndex(t=>t.id===id);
+if(i<0)return;
+let t=state.transaksi[i];
+
+let newQty=prompt("Ubah qty",t.qty);
+let newHarga=prompt("Ubah harga",t.harga);
+if(newQty===null||newHarga===null)return;
+
+let p=findP(t.produkKode);
+if(p){
+if(t.jenis==='Penjualan') p.stok+=t.qty;
+else p.stok-=t.qty;
+
+if(t.jenis==='Penjualan') p.stok-=Number(newQty);
+else p.stok+=Number(newQty);
+}
+
+t.qty=Number(newQty);
+t.harga=Number(newHarga);
+t.total=t.qty*t.harga;
+
+save();renderAll();
+};
+
+function exportCSV(rows,filename){
+let csv=rows.map(r=>r.join(',')).join('\n');
+let blob=new Blob([csv],{type:'text/csv'});
+let url=URL.createObjectURL(blob);
+let a=document.createElement('a');
+a.href=url;a.download=filename;a.click();
+URL.revokeObjectURL(url);
+}
+
+function exportTrans(){
+if(state.transaksi.length===0){alert("Kosong");return;}
+let rows=[["ID","Tgl","Jenis","Kode","Produk","Qty","Harga","Total"]];
+state.transaksi.forEach(t=>rows.push([t.id,t.tanggal,t.jenis,t.produkKode,t.produkNama,t.qty,t.harga,t.total]));
+exportCSV(rows,"transaksi_kel3.csv");
+}
+
+function exportLap(){
+let rows=[["Item","Total"]];
+let totalJ=state.transaksi.filter(t=>t.jenis=='Penjualan').reduce((a,b)=>a+b.total,0);
+let totalB=state.transaksi.filter(t=>t.jenis=='Pembelian').reduce((a,b)=>a+b.total,0);
+rows.push(["Total Penjualan",totalJ]);
+rows.push(["Total Pembelian",totalB]);
+rows.push([]);
+rows.push(["Kode","Produk","Stok"]);
+state.produk.forEach(p=>rows.push([p.kode,p.nama,p.stok]));
+exportCSV(rows,"laporan_kel3.csv");
+}
+
+function reportFiltered(from,to){
+let f=state.transaksi.slice();
+if(from) f=f.filter(t=>t.tanggal>=from);
+if(to) f=f.filter(t=>t.tanggal<=to);
+
+if(!f.length){reportArea.innerHTML="(Tidak ada data)";return;}
+
+let html="<h3>Hasil Laporan</h3><table><thead><tr><th>Tgl</th><th>Jenis</th><th>Produk</th><th>Qty</th><th>Harga</th><th>Total</th></tr></thead><tbody>";
+let tj=0,tb=0;
+f.forEach(t=>{
+html+=<tr><td>${t.tanggal}</td><td>${t.jenis}</td><td>${t.produkNama}</td><td>${t.qty}</td><td>${t.harga}</td><td>${t.total}</td></tr>;
+if(t.jenis==='Penjualan')tj+=t.total; else tb+=t.total;
+});
+html+=</tbody></table><br><b>Total Penjualan:</b> ${rupiah(tj)}<br><b>Total Pembelian:</b> ${rupiah(tb)}<br><b>Laba:</b> ${rupiah(tj-tb)};
+reportArea.innerHTML=html;
+}
+
+function renderAll(){renderProduk();renderTransaksi();}
+
+document.addEventListener('DOMContentLoaded',()=>{
+tblProdukBody=document.querySelector('#tblProduk tbody');
+tblTransBody=document.querySelector('#tblTrans tbody');
+selProduk=document.getElementById('t_produk');
+p_nama=document.getElementById('p_nama');
+p_harga=document.getElementById('p_harga');
+p_stok=document.getElementById('p_stok');
+t_jenis=document.getElementById('t_jenis');
+t_qty=document.getElementById('t_qty');
+t_harga=document.getElementById('t_harga');
+sumPenjualanEl=document.getElementById('sumPenjualan');
+sumPembelianEl=document.getElementById('sumPembelian');
+sumLabaEl=document.getElementById('sumLaba');
+stokReport=document.getElementById('stokReport');
+reportArea=document.getElementById('reportArea');
+
+load();
+if(state.produk.length===0) fillSample();
+renderAll();
+
+document.getElementById('btnTambahProduk').onclick=()=>{
+if(!p_nama.value.trim()){alert("Isi nama");return;}
+addProduk(p_nama.value,Number(p_harga.value),Number(p_stok.value));
+p_nama.value='';p_harga.value='';p_stok.value='';
+};
+
+tblProdukBody.onclick=(e)=>{
+let b=e.target.closest('button');
+if(!b)return;
+let i=b.dataset.i;
+if(b.dataset.act==='edit'){
+let p=state.produk[i];
+let nn=prompt("Nama:",p.nama);
+let nh=prompt("Harga:",p.harga);
+let ns=prompt("Stok:",p.stok);
+if(nn!==null&&nh!==null&&ns!==null){
+p.nama=nn;p.harga=Number(nh);p.stok=Number(ns);
+save();renderProduk();renderTransaksi();
+}
+} else {
+if(confirm("Hapus produk?")){
+state.produk.splice(i,1);
+save();renderProduk();renderTransaksi();
+}
+}
+};
+
+document.getElementById('btnTambahTrans').onclick=()=>{
+let jenis=t_jenis.value;
+let kode=selProduk.value;
+let p=findP(kode);
+if(!p){alert("Pilih produk");return;}
+let qty=Number(t_qty.value);
+let harga=Number(t_harga.value||p.harga);
+tambahTrans(jenis,kode,qty,harga);
+t_qty.value=1;t_harga.value='';
+};
+
+document.getElementById('btnClearTrans').onclick=()=>{t_qty.value=1;t_harga.value='';};
+
+document.getElementById('btnExportTrans').onclick=exportTrans;
+document.getElementById('btnExportLaporan').onclick=exportLap;
+document.getElementById('btnExportAll').onclick=exportLap;
+
+document.getElementById('btnNewAll').onclick=()=>{
+if(confirm("Reset semua?")){
+state={produk:[],transaksi:[]};
+save();renderAll();
+}
+};
+
+document.getElementById('btnFillSample').onclick=()=>{if(confirm("Isi sample?"))fillSample();};
+
+document.getElementById('btnGenerate').onclick=()=>{
+let f=document.getElementById('f_from').value;
+let t=document.getElementById('f_to').value;
+reportFiltered(f,t);
+};
+
+document.getElementById('btnResetFilter').onclick=()=>{
+document.getElementById('f_from').value='';
+document.getElementById('f_to').value='';
+reportArea.innerHTML='';
+};
+});
+})();
+</script>
+
+</body>
+</html>
+
+
+
+
+
