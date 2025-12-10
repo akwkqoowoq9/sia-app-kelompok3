@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>SIA – Kelompok 3</title>
+<style>
+body {
+font-family: Arial, sans-serif;
+background: #f4f4f4;
+margin: 0;
+padding: 0;
+}
+
+header {
+background: #1b3b6f;
+color: white;
+padding: 20px;
+text-align: center;
+}
+
+.menu {
+background: #13315c;
+padding: 10px;
+text-align: center;
+}
+
+.menu a {
+color: white;
+margin: 0 15px;
+text-decoration: none;
+font-size: 18px;
+}
+
+.menu a:hover {
+text-decoration: underline;
+}
+
+.content {
+padding: 30px;
+background: white;
+width: 80%;
+margin: 30px auto;
+border-radius: 10px;
+}
+
+footer {
+background: #1b3b6f;
+color: white;
+text-align: center;
+padding: 15px;
+margin-top: 30px;
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>Sistem Informasi Akuntansi</h1>
+<h3>Kelompok 3</h3>
+</header>
+
+<div class="menu">
+<a href="pembelian.html">Pembelian</a>
+<a href="penjualan.html">Penjualan</a>
+<a href="stok.html">Stok Barang</a>
+<a href="laporan.html">Laporan Keuangan</a>
+</div>
+
+<div class="content">
+<h2>Selamat Datang di Sistem Informasi Akuntansi</h2>
+<p>Website ini merupakan luaran untuk mata kuliah Sistem Informasi Akuntansi.</p>
+<p>Dibuat oleh:</p>
+<ul>
+<li>Ainun Fitri</li>
+<li>Fathur Rozi</li>
+<li>Akhmad Muzzamil Firgi Awan</li>
+<li>Decy Dwi Nurul Safika</li>
+</ul>
+</div>
+
+<footer>
+© 2025 | Kelompok 3 – SIA
+</footer>
+
+</body>
+</html>
